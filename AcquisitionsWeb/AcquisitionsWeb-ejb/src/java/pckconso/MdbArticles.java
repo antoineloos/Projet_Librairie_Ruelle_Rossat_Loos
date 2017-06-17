@@ -51,7 +51,7 @@ public class MdbArticles implements MessageListener {
     public MdbArticles() {
         try {
             
-            FileHandler fh = new FileHandler("Articles.txt");
+            FileHandler fh = new FileHandler("acquisitionsBRL.txt");
             fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);
         } catch (IOException | SecurityException ex) {

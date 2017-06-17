@@ -128,7 +128,7 @@ public class slAcquisitions extends HttpServlet {
     private String connecter(HttpServletRequest request) throws Exception {
         String login, pwd;
         String vueReponse = "/login.jsp";
-        BufferedReader br = new BufferedReader(new FileReader("Articles.txt"));
+        BufferedReader br = new BufferedReader(new FileReader("acquisitionsBRL.txt"));
         erreur = "";
         try {
             login = request.getParameter("txtLogin");
