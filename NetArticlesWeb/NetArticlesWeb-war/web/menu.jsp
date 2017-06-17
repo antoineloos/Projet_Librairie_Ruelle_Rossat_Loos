@@ -9,7 +9,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+                <img  src="logo.png" alt="logo" height="60"   width="60">
                 <a class="navbar-brand" href="index.jsp">Accueil</a>
+                 
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse-target">
                 <ul class="nav navbar-nav">
