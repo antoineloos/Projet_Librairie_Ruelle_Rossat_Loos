@@ -1,5 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div class="well">
+    <div class="row">
+        <h1 class="col-md-6 col-md-offset-2">Rechercher par domaine</h1>    
+    </div>
     
 <form class="form form-horizontal" name="frmSearch" role="form" role="form" action="listeArticlesDomaine.cde" method="post">
     <h1 align='center'><c:out value="${titre}"/></h1>                               

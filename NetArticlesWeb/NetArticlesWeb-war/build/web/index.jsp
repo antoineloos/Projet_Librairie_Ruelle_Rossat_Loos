@@ -10,24 +10,30 @@
         <script src="lib/jquery/jquery-2.1.3.min.js" type="text/javascript"></script>        
         <script src="lib/bootstrap/js/bootstrap.js" type="text/javascript"></script>
         <script src="net_articles.js" type="text/javascript"></script>
-        
+
 
         <title>Net Articles</title>
     </head>
     <body class="body" >  
         <c:if test="${pageR == null}">
-        <div class="contener_titre_mega" align="center" >
-            
-            <div class="comment_titre_mega">projet tutoré de 4A</div>
-            <div class="name_titre_mega">la librairie  </div>
+            <div class="contener_titre_mega" align="center" >
+                
+                <img class="comment_titre_mega"  src="logo.png" alt="logo" height="100"   width="100">
+                <br/>
+                <br/>
+                <div class="comment_titre_mega">projet tutoré de 4A</div>
 
-            <div class="name_titre_mega" font>Book & mistère  </div>
 
-            <div class="avec_titre_mega">Ruelle Rossat Loos</div>
-        </div>
+                <div class="name_titre_mega">la librairie  </div>
+
+                <div class="name_titre_mega" >Book & mistère  </div>
+
+                <div class="avec_titre_mega">Ruelle Rossat Loos</div>
+                
+            </div>
         </c:if>
         <div class="container">
-            
+
             <c:import url="/menu.jsp"/>
             <div >
                 <c:if test="${pageR != null}">
