@@ -19,10 +19,10 @@
 
                 <ul class="nav navbar-nav navbar-right"> 
                     <c:if test="${sessionScope.userId != null}">
-                        <li><a href="deconnecter.cpt">Se déconnecter</a></li>
+                        <li><a href="deconnecter.acq">Se déconnecter</a></li>
                         </c:if>  
                         <c:if test="${sessionScope.userId == null}">                   
-                        <li><a href="login.cpt">Se connecter</a></li>
+                        <li><a href="login.acq">Se connecter</a></li>
                         </c:if>  
                 </ul>
             </div>

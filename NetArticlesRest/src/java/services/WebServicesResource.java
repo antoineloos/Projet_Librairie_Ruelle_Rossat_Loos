@@ -256,6 +256,27 @@ public class WebServicesResource {
         }
         return response;
     }
+    
+    @POST
+    @Path("getRedigeByAuteur")
+    @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+    public Response getRedigeByAuteur(Auteur auteur) throws Exception {
+        Response response = null;
+        try {
+            if (auteur != null) {
+
+                List<Redige> lstRediges = redigeF.listeByAuteur(auteur);
+                GenericEntity<List<Redige>> lRediges = new GenericEntity<List<Redige>>(lstRediges) {
+                };
+                response = Response.status(Response.Status.OK).entity(lRediges).build();
+            }
+        } catch (Exception ex) {
+            String msg = Utilitaire.getExceptionCause(ex);
+            JsonObject retour = Json.createObjectBuilder().add("message", Utilitaire.getExceptionCause(ex)).build();
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(retour).build();
+        }
+        return response;
+    }
 
     @GET
     @Path("getArticles/{id}")

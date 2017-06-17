@@ -116,8 +116,7 @@ public class ArticleFacade {
             mapMessage.setString("id", art.getIdArticle().toString());
             
             mapMessage.setString("titre", art.getTitre());
-            System.err.println("id : " + art.getIdArticle());
-            System.err.println("Titre : " + art.getTitre());
+            
             producteur.publish(mapMessage);
 
             producteur.close();

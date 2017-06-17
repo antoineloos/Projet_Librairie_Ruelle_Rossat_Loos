@@ -8,19 +8,42 @@ package controlleurs;
 import dal.Article;
 import dal.Auteur;
 import dal.Client;
+import dal.Redige;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Resource;
+import javax.ejb.ActivationConfigProperty;
+
 import javax.ejb.EJB;
+import javax.ejb.MessageDriven;
+import javax.ejb.MessageDrivenContext;
+import javax.jms.MapMessage;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import pckconso.MdbArticles;
+import session.MessageRepo;
+
 import utils.Utilitaire;
-import session.ArticleFacade;
+
 import session.AuteurFacade;
+import session.RedigeFacade;
 
 /**
  *
@@ -28,10 +51,10 @@ import session.AuteurFacade;
  */
 public class slAcquisitions extends HttpServlet {
 
-    
-    private AuteurFacade auteurF = new AuteurFacade();
-    
-    private ArticleFacade articleF = new ArticleFacade();
+    @EJB
+    private AuteurFacade auteurF;
+    @EJB
+    private RedigeFacade redigeF;
 
     private String erreur;
 
@@ -47,23 +70,25 @@ public class slAcquisitions extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
         try (PrintWriter out = response.getWriter()) {
+
             String demande;
             String vueReponse = "/index.jsp";
             erreur = "";
             try {
                 demande = getDemande(request);
-                if (demande.equalsIgnoreCase("login.cpt")) {
+                if (demande.equalsIgnoreCase("login.acq")) {
                     vueReponse = login(request);
-                } else if (demande.equalsIgnoreCase("connecter.cpt")) {
+                } else if (demande.equalsIgnoreCase("connecter.acq")) {
                     vueReponse = connecter(request);
-                } else if (demande.equalsIgnoreCase("deconnecter.cpt")) {
+                } else if (demande.equalsIgnoreCase("deconnecter.acq")) {
                     vueReponse = deconnecter(request);
-                } else if (demande.equalsIgnoreCase("voirCompte.cpt")) {
+                } else if (demande.equalsIgnoreCase("voirCompte.acq")) {
                     vueReponse = voirCompte(request);
-                } else if (demande.equalsIgnoreCase("validerCompte.cpt")) {
+                } else if (demande.equalsIgnoreCase("validerCompte.acq")) {
                     vueReponse = validerCompte(request);
-                } else if (demande.equalsIgnoreCase("creerCompte.cpt")) {
+                } else if (demande.equalsIgnoreCase("creerCompte.acq")) {
                     vueReponse = creerCompte(request);
                 }
 
@@ -73,7 +98,7 @@ public class slAcquisitions extends HttpServlet {
                 request.setAttribute("erreurR", erreur);
                 request.setAttribute("pageR", vueReponse);
                 RequestDispatcher dsp = request.getRequestDispatcher("/index.jsp");
-                if (vueReponse.contains(".cpt")) {
+                if (vueReponse.contains(".acq")) {
                     dsp = request.getRequestDispatcher(vueReponse);
                 }
                 dsp.forward(request, response);
@@ -94,7 +119,7 @@ public class slAcquisitions extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("userId", null);
 
-            return ("index.jsp");
+            return ("/login.jsp");
         } catch (Exception e) {
             throw e;
         }
@@ -103,6 +128,7 @@ public class slAcquisitions extends HttpServlet {
     private String connecter(HttpServletRequest request) throws Exception {
         String login, pwd;
         String vueReponse = "/login.jsp";
+        BufferedReader br = new BufferedReader(new FileReader("Articles.txt"));
         erreur = "";
         try {
             login = request.getParameter("txtLogin");
@@ -112,16 +138,45 @@ public class slAcquisitions extends HttpServlet {
                 Auteur auteur = auteurF.getAuteur();
                 vueReponse = "/listeArticles.jsp";
                 HttpSession session = request.getSession(true);
-                ArrayList<Article> lstArticle = (ArrayList<Article>) articleF.lister();
+
+                List<Redige> lstArticleAuteur = redigeF.getArticlesByAuteur(auteur);
+                ArrayList<Article> lstArticle = new ArrayList<Article>();
+                String allMsg = null;
+
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                allMsg = sb.toString();
+                if (!allMsg.isEmpty() || allMsg != null) {
+                    Pattern p = Pattern.compile("id:\\[(\\d+)\\]");
+
+                    Matcher m = p.matcher(allMsg);
+
+                    boolean b = m.matches();
+                    while (m.find()) 
+                    {
+                       if(lstArticleAuteur.stream().anyMatch(r->r.getArticle().getIdArticle() == Integer.parseInt(m.group(1))))
+                           lstArticle.add(lstArticleAuteur.stream().filter(r->r.getArticle().getIdArticle() == Integer.parseInt(m.group(1))).findFirst().get().getArticle()) ;
+                    }
+
+                   
+                }
                 request.setAttribute("lArticlesR", lstArticle);
                 session.setAttribute("userId", auteur.getIdAuteur());
-                
+
             } else {
                 erreur = "Login ou mot de passe inconnus !";
             }
+
         } catch (Exception e) {
             erreur = e.getMessage();
         } finally {
+            br.close();
             return (vueReponse);
         }
     }
@@ -206,7 +261,9 @@ public class slAcquisitions extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         processRequest(request, response);
+
     }
 
     /**
@@ -220,7 +277,9 @@ public class slAcquisitions extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         processRequest(request, response);
+
     }
 
     /**

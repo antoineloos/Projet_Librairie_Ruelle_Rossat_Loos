@@ -6,6 +6,7 @@
 package client;
 
 import dal.Article;
+import dal.Redige;
 import java.util.List;
 import javax.json.JsonObject;
 import javax.ws.rs.ClientErrorException;
@@ -13,6 +14,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import utils.Utilitaire;
 
 
 /**
@@ -79,6 +81,17 @@ public class AcquisitionClient {
         WebTarget resource = webTarget;
         resource = resource.path("getAuteurs");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+      
+      public List<Redige> getRedigeByAuteur(Object requestEntity) throws ClientErrorException, Exception {
+        Response response = webTarget.path("getRedigeByAuteur").request(javax.ws.rs.core.MediaType.APPLICATION_JSON + "; charset=UTF-8").post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON + "; charset=UTF-8"), Response.class);
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+            JsonObject jsonObject = Utilitaire.convertJson(response.readEntity(String.class));
+            String message = jsonObject.getString("message");
+            throw new Exception(message);
+        }
+        return response.readEntity(new GenericType<List<Redige>>() {
+        });
     }
 
     public Response getArticlesByDomaine() throws ClientErrorException {

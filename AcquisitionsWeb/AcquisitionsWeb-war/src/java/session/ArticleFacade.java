@@ -11,7 +11,15 @@ import dal.Domaine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.ejb.Stateless;
+import javax.ejb.LocalBean;
 
+/**
+ *
+ * @author Epulapp
+ */
+@Stateless
+@LocalBean
 /**
  *
  * @author Epulapp

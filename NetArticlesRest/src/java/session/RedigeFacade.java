@@ -5,10 +5,15 @@
  */
 package session;
 
+import dal.Article;
+import dal.Auteur;
+
 import dal.Redige;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -28,5 +33,18 @@ public class RedigeFacade extends AbstractFacade<Redige> {
     public RedigeFacade() {
         super(Redige.class);
     }
+
+    public List<Redige> listeByAuteur(Auteur auteur) {
+        
+        try {
+            Query requete = em.createNamedQuery("Redige.findByIdAuteur");
+            requete.setParameter("idAuteur", auteur.getIdAuteur());
+            List<Redige> tmp = requete.getResultList();
+            return tmp;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+    
     
 }

@@ -9,7 +9,15 @@ import client.AcquisitionClient;
 import dal.Auteur;
 
 import javax.ws.rs.core.Response;
+import javax.ejb.Stateless;
+import javax.ejb.LocalBean;
 
+/**
+ *
+ * @author Epulapp
+ */
+@Stateless
+@LocalBean
 /**
  *
  * @author Epulapp

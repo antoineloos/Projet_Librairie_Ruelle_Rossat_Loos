@@ -4,7 +4,15 @@
  * and open the template in the editor.
  */
 package session;
+import javax.ejb.Stateless;
+import javax.ejb.LocalBean;
 
+/**
+ *
+ * @author Epulapp
+ */
+@Stateless
+@LocalBean
 /**
  *
  * @author Epulapp
