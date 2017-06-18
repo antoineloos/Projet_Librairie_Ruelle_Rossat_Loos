@@ -12,16 +12,9 @@ import javax.ws.rs.core.Response;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
 
-/**
- *
- * @author Epulapp
- */
+
 @Stateless
 @LocalBean
-/**
- *
- * @author Epulapp
- */
 public class AuteurFacade {
     private Auteur auteur;
 
@@ -33,14 +26,7 @@ public class AuteurFacade {
         this.auteur = auteur;
     }
 
-       /**
-     * Lecture de l'utilisateur sur son login Note : le login est unique
-     * (contrainte de bd)
-     *
-     * @param login login de l'utilisateur à lire
-     * @return un objet Client
-     * @throws Exception
-     */
+  
     public Auteur lireLogin(String login) throws Exception {
         try {
             AcquisitionClient NetArticlesRest = new AcquisitionClient();

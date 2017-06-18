@@ -10,6 +10,7 @@ import dal.Auteur;
 import dal.Client;
 import dal.Redige;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -126,9 +127,11 @@ public class slAcquisitions extends HttpServlet {
     }
 
     private String connecter(HttpServletRequest request) throws Exception {
+        System.out.println(new File(".").getAbsoluteFile());
         String login, pwd;
         String vueReponse = "/login.jsp";
-        BufferedReader br = new BufferedReader(new FileReader("acquisitionsBRL.txt"));
+
+        
         erreur = "";
         try {
             login = request.getParameter("txtLogin");
@@ -139,33 +142,38 @@ public class slAcquisitions extends HttpServlet {
                 vueReponse = "/listeArticles.jsp";
                 HttpSession session = request.getSession(true);
 
-                List<Redige> lstArticleAuteur = redigeF.getArticlesByAuteur(auteur);
                 ArrayList<Article> lstArticle = new ArrayList<Article>();
-                String allMsg = null;
+                File f = new File("acquisitionsRRL.txt");
+                if (f.exists() && !f.isDirectory()) {
+                    BufferedReader br = new BufferedReader(new FileReader("acquisitionsRRL.txt"));
+                    List<Redige> lstArticleAuteur = redigeF.getArticlesByAuteur(auteur);
 
-                StringBuilder sb = new StringBuilder();
-                String line = br.readLine();
+                    String allMsg = null;
 
-                while (line != null) {
-                    sb.append(line);
-                    sb.append(System.lineSeparator());
-                    line = br.readLine();
-                }
-                allMsg = sb.toString();
-                if (!allMsg.isEmpty() || allMsg != null) {
-                    Pattern p = Pattern.compile("id:\\[(\\d+)\\]");
+                    StringBuilder sb = new StringBuilder();
+                    String line = br.readLine();
 
-                    Matcher m = p.matcher(allMsg);
-
-                    boolean b = m.matches();
-                    while (m.find()) 
-                    {
-                       if(lstArticleAuteur.stream().anyMatch(r->r.getArticle().getIdArticle() == Integer.parseInt(m.group(1))))
-                           lstArticle.add(lstArticleAuteur.stream().filter(r->r.getArticle().getIdArticle() == Integer.parseInt(m.group(1))).findFirst().get().getArticle()) ;
+                    while (line != null) {
+                        sb.append(line);
+                        sb.append(System.lineSeparator());
+                        line = br.readLine();
                     }
+                    allMsg = sb.toString();
+                    if (!allMsg.isEmpty() || allMsg != null) {
+                        Pattern p = Pattern.compile("id:\\[(\\d+)\\]");
 
-                   
+                        Matcher m = p.matcher(allMsg);
+
+                        boolean b = m.matches();
+                        while (m.find()) {
+                            if (lstArticleAuteur.stream().anyMatch(r -> r.getArticle().getIdArticle() == Integer.parseInt(m.group(1)))) {
+                                lstArticle.add(lstArticleAuteur.stream().filter(r -> r.getArticle().getIdArticle() == Integer.parseInt(m.group(1))).findFirst().get().getArticle());
+                            }
+                        }
+                        br.close();
+                    }
                 }
+
                 request.setAttribute("lArticlesR", lstArticle);
                 session.setAttribute("userId", auteur.getIdAuteur());
 
@@ -176,9 +184,10 @@ public class slAcquisitions extends HttpServlet {
         } catch (Exception e) {
             erreur = e.getMessage();
         } finally {
-            br.close();
+            
             return (vueReponse);
         }
+
     }
 
     private String voirCompte(HttpServletRequest request) throws Exception {
